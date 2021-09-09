@@ -20,34 +20,20 @@ with open("server/db/serversdata.bin", "rb") as ff:
 
 
 def out():
+    global servers_count_list
+    with open("server/db/serversdata.bin", "rb") as ff:
+        servers_count_list = pickle.load(ff)
     df = pd.DataFrame(dict(time=([i + 1 for i in range(len(servers_count_list))]), servers=servers_count_list))
-    g = sns.relplot(x="time", y="servers", kind="line", data=df, height=5, aspect=1.7)
+    # g = sns.lineplot(x="time", y="servers", data=df)
+    g = sns.relplot(x="time", y="servers", kind="line", data=df, height=5, aspect=1.7)  # , col="servers", col_wrap=8
     # g.set(xlim=(0, 200))
-    # g.set(rc={'figure.figsize': (16, 9)})
     # g.fig.autofmt_xdate()
+
     bytesio = BytesIO()
     g.savefig(bytesio, dpi=300, format='png')
     bytesio.seek(0)
-    # with open("a.png", "wb") as f:
-    #     f.write(bytesio.read())
     return bytesio
 
-
-# @tasks.loop(seconds=30)
-# async def req_timer():
-#     async with aiohttp.ClientSession() as cs:
-#         async with cs.get("https://koreanbots.dev/api/v2/bots/807262470347030545") as res:
-#             re = await res.json()
-#             servs = re["data"]["servers"]
-#             servers_count_list.append(servs)
-#             async with aiofiles.open("server/db/serversdata.bin", "wb") as f:
-#                 await f.write(pickle.dumps(servers_count_list))
-#             print(f"Updated. Servers: {servs}")
-#             # out()
-#             # print("Image Saved")
-#
-#
-# req_timer.start()
 
 app = flask.Flask(__name__)
 

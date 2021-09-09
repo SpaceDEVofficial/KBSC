@@ -7,7 +7,7 @@ import asyncio
 with open("server/db/serversdata.bin", "rb") as ff:
     servers_count_list = pickle.load(ff)
 
-@tasks.loop(minutes=10)
+@tasks.loop(minutes=1)
 async def req_timer():
     async with aiohttp.ClientSession() as cs:
         async with cs.get("https://koreanbots.dev/api/v2/bots/807262470347030545") as res:
