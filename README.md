@@ -1,5 +1,5 @@
 # Koreanbots-Bot-Servers-Chart
-기존 레퍼를 포크해 현재 'Konosuba'봇에 사용되고있는 소스로 변경한 레포입니다.
+[fsanchir](<https://github.com/fsanchir/Koreanbots-Bot-Servers-Chart>)님의 레퍼를 포크해 현재 'Konosuba'봇에 사용되고있는 소스로 변경한 레포입니다.
 
 ## 사용법
 - config.py 파일의 bot_id에서, 본인의 봇 아이디를 " "안에 기입해주세요.
