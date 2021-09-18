@@ -17,6 +17,8 @@ else:
 async def out():
     async with aiosqlite.connect("db/db.db") as con:
         data = list(await (await con.execute("SELECT * FROM guild_count")).fetchall())
+        if len(data) > 47:
+            data = data[(len(data) - 47):]
         x = []
         y = []
         for i in data:
@@ -39,6 +41,8 @@ async def out():
 async def vote_out():
     async with aiosqlite.connect("db/db.db") as con:
         data = list(await (await con.execute("SELECT * FROM vote_count")).fetchall())
+        if len(data) > 47:
+            data = data[(len(data) - 47):]
         x = []
         y = []
         for i in data:
