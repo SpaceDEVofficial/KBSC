@@ -10,6 +10,14 @@
  
 투표차트: http://localhost:5000/voteget?type=image
 
+[korbots_statistics_web_server.py](<https://github.com/SpaceDEVofficial/KBSC/blob/446608672e06abbb61214fe8a4eb5761adece18c/korbots_statistics_web_server.py#L20>)에 20번째줄에 있는 코드는
+
+자동으로 데이터 값을 잘라내어 텍스트가 겹치지않게 해줍니다.
+```python
+# 자동 데이터값 컷팅
+if len(data) > 47:
+    data = data[(len(data) - 47):]
+```
 ## Example Image
 
 서버수 차트
