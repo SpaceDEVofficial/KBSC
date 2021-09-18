@@ -12,7 +12,10 @@ async def req_timer():
     async with aiohttp.ClientSession() as cs:
         async with cs.get("https://koreanbots.dev/api/v2/bots/807262470347030545") as res:
             re = await res.json()
-            servs = re["data"]["servers"]
+            try:
+                servs = re["data"]["servers"]
+            except:
+                pass
             servers_count_list.append(servs)
             async with aiofiles.open("server/db/serversdata.bin", "wb") as f:
                 await f.write(pickle.dumps(servers_count_list))
