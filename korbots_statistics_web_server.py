@@ -1,62 +1,77 @@
+from datetime import datetime
+import matplotlib.pyplot as plt
 import flask
-from flask import request
-import pickle
+import quart
+from quart import request
 from io import BytesIO
-import asyncio
-import seaborn as sns
-from matplotlib import pyplot as plt
-from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
-import warnings
+import aiosqlite
+import math
+import config
 
-sns.set(rc={'figure.figsize': (16, 9)})
-warnings.filterwarnings("ignore")
+if config.env:
+    host_ip = "0.0.0.0"
+    host_port = 80
+else:
+    host_ip = "127.0.0.1"
+    host_port = 80
+async def out():
+    async with aiosqlite.connect("db/db.db") as con:
+        data = list(await (await con.execute("SELECT * FROM guild_count")).fetchall())
+        x = []
+        y = []
+        for i in data:
+            x.append(i[1][:-3])
+            y.append(i[0])
+        fig, ax = plt.subplots()
+        ax.set(title='Konosuba bot Server chart!')
+        plt.plot_date(x, y, linestyle='solid')
+        plt.margins(0)
+        plt.gcf().set_size_inches(20, 10)
+        new_list = range(math.floor(min(y))-3, math.ceil(max(y)) + 3)
+        plt.yticks(new_list)
+        fig.autofmt_xdate(rotation=65)
+        plt.grid(True)
+        bytesio = BytesIO()
+        plt.savefig(bytesio, dpi=300, format='png',bbox_inches='tight')
+        bytesio.seek(0)
+        return bytesio
 
-with open("server/db/serversdata.bin", "rb") as ff:
-    servers_count_list = pickle.load(ff)
+async def vote_out():
+    async with aiosqlite.connect("db/db.db") as con:
+        data = list(await (await con.execute("SELECT * FROM vote_count")).fetchall())
+        x = []
+        y = []
+        for i in data:
+            x.append(i[1][:-3])
+            y.append(i[0])
+        fig, ax = plt.subplots()
+        ax.set(title='Konosuba bot Heart❤ chart! ')
+        plt.plot_date(x, y, linestyle='solid',color="red")
+        plt.margins(0)
+        plt.gcf().set_size_inches(20, 10)
+        new_list = range(math.floor(min(y))-2, math.ceil(max(y)) + 3)
+        plt.yticks(new_list)
+        ax.set_xticklabels(x)
+        fig.autofmt_xdate(rotation=65)
+        plt.grid(True)
+        bytesio = BytesIO()
+        plt.savefig(bytesio, dpi=300, format='png',bbox_inches='tight')
+        bytesio.seek(0)
+        return bytesio
 
-
-def out():
-    global servers_count_list
-    with open("server/db/serversdata.bin", "rb") as ff:
-        servers_count_list = pickle.load(ff)
-    x = [i + 1 for i in range(len(servers_count_list))]
-    y = servers_count_list
-    scl_length = len(servers_count_list)
-
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-
-    ax.xaxis.grid(True, which="minor")
-
-    ax.xaxis.set_major_locator(MultipleLocator(round(scl_length / 10)))
-    ax.xaxis.set_major_formatter('{x:.0f}')
-    ax.xaxis.set_minor_locator(AutoMinorLocator())
-
-    d = scl_length / 50
-    d = round(d / 1440, 2)
-    plt.xlabel(f"{scl_length} minutes | Grid per {d} day")
-    ax.xaxis.set_ticklabels([])
-
-    bytesio = BytesIO()
-
-    fig.savefig(bytesio, dpi=300, format='png')
-    bytesio.seek(0)
-    return bytesio
-
-
-app = flask.Flask(__name__)
+app = quart.Quart(__name__)
 
 
 @app.route("/get")
-def web_get_image():
+async def web_get_image():
     if request.args.get('type') == 'image':
-        return flask.send_file(out(), mimetype='image/png')
+        return await quart.send_file(filename_or_io=await out(), mimetype='image/png')
 
-
-@app.route("/total")
-def web_get_total():
-    return str(len(servers_count_list))
+@app.route("/voteget")
+async def vote_get_image():
+    if request.args.get('type') == 'image':
+        return await quart.send_file(filename_or_io=await vote_out(), mimetype='image/png')
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="8888")
+    app.run(host=host_ip, port=host_port)

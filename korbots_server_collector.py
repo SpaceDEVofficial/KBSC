@@ -1,27 +1,50 @@
-import pickle
-import aiohttp
+import datetime
+import time
 from discord.ext import tasks
-import aiofiles
+import aiohttp
 import asyncio
+import aiosqlite
+import config
+sql_create_initial_thunder_table = """ CREATE TABLE IF NOT EXISTS guild_count (
 
-with open("server/db/serversdata.bin", "rb") as ff:
-    servers_count_list = pickle.load(ff)
+                                    counts integer,
 
-@tasks.loop(minutes=1)
-async def req_timer():
+                                    dates text DEFAULT (datetime('now','localtime'))
+
+                                ); """
+
+vote_table = """ CREATE TABLE IF NOT EXISTS vote_count (
+
+                                    counts integer,
+
+                                    dates text DEFAULT (datetime('now','localtime'))
+
+                                ); """
+
+@tasks.loop(minutes=10)
+async def loops():
     async with aiohttp.ClientSession() as cs:
-        async with cs.get("https://koreanbots.dev/api/v2/bots/807262470347030545") as res:
+        async with cs.get(f"https://koreanbots.dev/api/v2/bots/{config.bot_id}") as res:
             re = await res.json()
-            try:
-                servs = re["data"]["servers"]
-            except:
-                pass
-            servers_count_list.append(servs)
-            async with aiofiles.open("server/db/serversdata.bin", "wb") as f:
-                await f.write(pickle.dumps(servers_count_list))
+            servs = re["data"]["servers"]
+            async with aiosqlite.connect("db/db.db") as con:
+                await con.execute(sql_create_initial_thunder_table)
+                await con.execute(f"INSERT INTO guild_count(counts) VALUES (?)",(servs,))
+                await con.commit()
             print(f"Updated. Servers: {servs}")
+@tasks.loop(minutes=10)
+async def vote_loops():
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(f"https://koreanbots.dev/api/v2/bots/{config.bot_id}") as res:
+            re = await res.json()
+            servs = re["data"]["votes"]
+            async with aiosqlite.connect("db/db.db") as con:
+                await con.execute(vote_table)
+                await con.execute(f"INSERT INTO vote_count(counts) VALUES (?)",(servs,))
+                await con.commit()
+            print(f"Updated. votes: {servs}")
 
-
-req_timer.start()
+loops.start()
+vote_loops.start()
 
 asyncio.get_event_loop().run_forever()
