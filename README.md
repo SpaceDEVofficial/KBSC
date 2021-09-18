@@ -1,4 +1,4 @@
-# Koreanbots-Bot-Servers-Chart
+# KBSC
 [fsanchir](<https://github.com/fsanchir/Koreanbots-Bot-Servers-Chart>)님의 레퍼를 포크해 현재 'Konosuba'봇에 사용되고있는 소스로 변경한 레포입니다.
 
 ## 사용법
