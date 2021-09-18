@@ -3,7 +3,8 @@
 
 ## 사용법
 - config.py 파일의 bot_id에서, 본인의 봇 아이디를 " "안에 기입해주세요.
-- korbots_server_collector.py를 켜시고, korbots_statistics_web_server.py를 켜 주세요.  
+- korbots_server_collector.py를 켜시고, korbots_statistics_web_server.py를 켜 주세요.
+- [db파일](<https://github.com/SpaceDEVofficial/KBSC/blob/main/server/db/db.db>)은 따로 만지실 필요가 없습니다. 최초 구동시 자동으로 테이블을 구성합니다.
  
 서버차트: http://localhost:5000/get?type=image
  
