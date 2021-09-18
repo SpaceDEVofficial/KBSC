@@ -9,6 +9,12 @@
  
 투표차트: http://localhost:5000/voteget?type=image
 
+## Example Image
 
+서버수 차트
+![서버차트](<https://media.discordapp.net/attachments/884407186854404106/888801756362977280/output.png?width=1056&height=549>)
+
+투표수 차트
+![투표차트](<https://media.discordapp.net/attachments/884407186854404106/888790778770497566/output.png?width=1056&height=549>)
 # 라이센스
 이 레포는 MIT 라이센스를 따릅니다. 따라, 봇의 도움말, 레포 오픈소스 알림 등에 출처를 기제해주세요.
